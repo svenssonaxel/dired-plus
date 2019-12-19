@@ -5339,8 +5339,9 @@ If no association, or if you use a prefix arg, prompt for directory."
   "String list of file names last copied to the `kill-ring'.
 Copying is done by `dired-copy-filename-as-kill' and related commands.")
 
-(defvar diredp-filename-separator "|"
-  "Separator of filenames.")
+(defvar diredp-filename-separator (copy-sequence "\000") ; "^@"
+  ;; Should contain only chars that are invalid in a file name.
+  "String used to separate file names in a `kill-ring' entry.")
 
 ;; REPLACE ORIGINAL in `dired-x.el'.
 ;;
