@@ -5330,6 +5330,9 @@ If no association, or if you use a prefix arg, prompt for directory."
   "String list of file names last copied to the `kill-ring'.
 Copying is done by `dired-copy-filename-as-kill' and related commands.")
 
+(defvar diredp-filename-separator (copy-sequence "\000") ; "^@"
+  ;; Should contain only chars that are invalid in a file name.
+  "String used to separate file names in a `kill-ring' entry.")
 
 ;; REPLACE ORIGINAL in `dired.el'.
 ;;
@@ -5358,7 +5361,7 @@ the kill ring is modified."
                                        ((zerop num-arg) (dired-get-marked-files))
                                        ((consp arg)     (dired-get-marked-files t))
                                        (t               (dired-get-marked-files 'no-dir num-arg)))
-                                 " "))))
+                                 diredp-filename-separator))))
     (unless (string= "" string)
       (if (eq last-command 'kill-region) (kill-append string nil) (kill-new string))
       (setq diredp-last-copied-filenames  (car kill-ring-yank-pointer))
@@ -5407,7 +5410,7 @@ Optional arg DETAILS is passed to `diredp-y-or-n-files-p'."
   (unless (file-directory-p dir) (error "Not a directory: `%s'" dir))
   (let ((files  diredp-last-copied-filenames))
     (unless (stringp files)  (error "No copied file names"))
-    (setq files  (diredp-delete-if-not (lambda (file) (file-name-absolute-p file)) (split-string files)))
+    (setq files  (diredp-delete-if-not (lambda (file) (file-name-absolute-p file)) (split-string files diredp-filename-separator)))
     (unless files  (error "No copied *absolute* file names (Did you use `M-0 w'?)"))
     (if (and (not no-confirm-p)
              (diredp-y-or-n-files-p "Paste files whose names you copied? " files nil details))
