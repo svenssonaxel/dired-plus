@@ -2328,21 +2328,7 @@ Target directory names should be absolute."
 ;;          (strg  (replace-regexp-in-string "\\([$]\\)" "" strg 'FIXEDCASE nil))) ; Remove $'s
 ;;     strg))
 
-(defcustom diredp-omit-files-regexp (let* ((strg  dired-omit-files)
-                                           (strg  (if (eq ?^ (aref strg 0)) ; Remove initial ^
-                                                      (substring strg 1)
-                                                    strg))
-                                           (strg  (replace-regexp-in-string "\\(\\\\[|]\\)\\^" ; Remove other ^'s
-                                                                            "\\1"
-                                                                            strg
-                                                                            'FIXEDCASE
-                                                                            nil))
-                                           (strg  (replace-regexp-in-string "\\([$]\\)" ; Remove $'s
-                                                                            ""
-                                                                            strg
-                                                                            'FIXEDCASE
-                                                                            nil)))
-                                      strg)
+(defcustom diredp-omit-files-regexp "\\.?#.*#\\|\\.\\|\\.\\."
   "Regexp for font-locking file names to be omitted by `dired-omit-mode'.
 The regexp is matched only against the file name, but the entire line
 is highlighted (with face `diredp-omit-file-name').
@@ -3945,7 +3931,7 @@ This means file names that match regexp `diredp-omit-files-regexp'.
      (list (concat "^  \\(.*\\(" omit-exts compr-exts "\\)[*]?\\)$") ; [*]? allows for executable flag (*).
            1 diredp-ignored-file-name t))
    `(,(concat "^.*" dired-move-to-filename-regexp
-              "\\(" diredp-omit-files-regexp "\\).*[*]?$") ; [*]? allows for executable flag (*).
+              "\\(" diredp-omit-files-regexp "\\)[*]?$") ; [*]? allows for executable flag (*).
      (0 diredp-omit-file-name t))
 
    ;; Compressed-file (suffix)
@@ -4008,7 +3994,7 @@ This means file names that match regexp `diredp-omit-files-regexp'.
    (list (concat dired-re-maybe-mark dired-re-inode-size "\\([bcsmpS]\\)") ; (rare)
          '(1 diredp-rare-priv keep))
    (list (concat dired-re-maybe-mark dired-re-inode-size "\\(l\\)[-rwxlsStT]") ; l
-         '(1 diredp-rare-priv keep))
+         '(1 diredp-link-priv keep))
 
    (list (concat "^\\([^\n " (char-to-string dired-del-marker) "].*$\\)")
          1 diredp-flag-mark-line t)     ; Flag/mark lines
